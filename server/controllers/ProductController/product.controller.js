@@ -1,5 +1,7 @@
 const { default: mongoose, mongo } = require('mongoose');
 const productModel = require('../../model/ProductModel/product.model')
+const cloudinary = require('../../config/clodinary')
+const fs = require('fs')
 
 const createProduct = async (req, res) => { 
     try {
@@ -12,12 +14,25 @@ const createProduct = async (req, res) => {
             })
         }
 
+        let uploadedImages = [];
+
+        for (let file of req.files) {
+            const uploadResult = await cloudinary.uploader.upload(file.path, {
+                folder: "eComProducts"
+            });
+
+            uploadedImages.push(uploadResult.secure_url);
+            fs.unlinkSync(file.path);
+        }
+
+
         const createProduct = await productModel.create({ 
             p_name,
             p_description,
             p_price,
             P_categories,
-            p_stock
+            p_stock,
+            p_image : uploadedImages
         })
 
         return res.status(201).json({
