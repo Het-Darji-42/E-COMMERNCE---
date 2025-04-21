@@ -183,16 +183,16 @@ Allows admins to create and manage product categories (e.g., Electronics, Clothi
 
 Allows admins to manage products and users to browse them.
 
-- **Model (**`productModel.js`**)**:
+- **Model (**`productModel.js`**)**:✅
 
   - **Fields**:
-    - `name`: String, required (e.g., “Smartphone”).
-    - `description`: String, required (product details).
-    - `price`: Number, required (product price).
-    - `category`: ObjectId, ref to `Category` (links to category).
-    - `stock`: Number, required (available quantity).
-    - `images`: Array of Strings (URLs to product images).
-    - `createdAt`: Date, default current timestamp.
+    - `name`: String, required (e.g., “Smartphone”).✅
+    - `description`: String, required (product details).✅
+    - `price`: Number, required (product price).✅
+    - `category`: ObjectId, ref to `Category` (links to category).✅
+    - `stock`: Number, required (available quantity).✅
+    - `images`: Array of Strings (URLs to product images).✅
+    - `createdAt`: Date, default current timestamp.✅
   - **Additional Logic**:
     - Validate stock (non-negative).
     - Ensure category exists before saving.
