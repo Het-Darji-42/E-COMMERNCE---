@@ -5,7 +5,6 @@ const userSchma = new mongoose.Schema(
             type: String, 
             required: true, 
             index: true, 
-            lowercase : true
         },
         email: { 
             type: String, 
@@ -21,10 +20,10 @@ const userSchma = new mongoose.Schema(
             enum: ['user', 'admin'],
             default : "user"
         },
-        // userImage: { 
-        //     type: String,  //clodinary
-        //     required: false
-        // }
+        profileImage: { 
+            type: String,  //clodinary
+            required: false
+        }
     },{timestamps : true}
 )
 

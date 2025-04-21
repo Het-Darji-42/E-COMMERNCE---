@@ -3,25 +3,41 @@ const bcrypt = require("bcrypt");
 const userModel = require("../../model/UserModel/user.model");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv").config();
+const cloudinary = require('../../config/clodinary')
+const fs = require('fs')
+
 
 const Register = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
 
     const existedUser = await userModel.findOne({ username, email });
-    if (existedUser) {
+      if (existedUser) {
+        
+          if (req.file && req.file.path) {
+              fs.unlinkSync(req.file.path)
+          }
+          
       return res.status(400).json({
         message: "User Already Existed",
       });
     }
 
+    
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, { 
+          folder : "Ecom_Profile_Image"
+      })
+    
+      fs.unlinkSync(req.file.path)
+      
     const hashPassword = await bcrypt.hash(password, 10);
 
     const createUser = await userModel.create({
       username,
       email,
       password: hashPassword,
-      role,
+        role,
+        profileImage : uploadResult.secure_url,
     });
 
     return res.status(201).json({
@@ -35,6 +51,8 @@ const Register = async (req, res) => {
     });
   }
 };
+
+
 
 const Login = async (req, res) => {
   try {
@@ -55,7 +73,7 @@ const Login = async (req, res) => {
     }
 
     const secret = process.env.JWT_SECRET;
-    const token = jwt.sign({ id: isUser._id, role: isUser.role }, secret, {
+    const token = jwt.sign({ authID: isUser._id, role: isUser.role }, secret, {
       expiresIn: "10d",
     });
 
