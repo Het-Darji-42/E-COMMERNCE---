@@ -22,7 +22,7 @@ const createProduct = async (req, res) => {
     let uploadedImages = [];
 
     for (let file of req.files) {
-      const uploadResult = await cloudinary.uploader.upload(file.path, {
+      const uploadResult = await cloudinary.uploader.upload(file.path, {     // herr file = req.file , so file.path = req.file.path
         folder: "eComProducts",
       });
 
@@ -75,7 +75,7 @@ const DeleteProduct = async (req, res) => {
       message: "Product Deleted Successfully",
       product: deleteProduct,
     });
-  } catch (error) { 
+  } catch (error) {
     return res.status(500).json({
       message: "Server Side Error",
     });
@@ -83,6 +83,33 @@ const DeleteProduct = async (req, res) => {
 };
 const updateProduct = async (req, res) => {
   try {
+    const { id } = req.params;
+    const { p_name, p_description, p_price, P_categories, p_stock } = req.body;
+
+      
+      const isExisted = await productModel.findOne({ p_name, p_description, p_price, P_categories})
+      if (isExisted) {
+          return res.status(200).json({
+              message : "With Same Details , Product Already Existed"
+          })
+      }
+    const product = await productModel.findByIdAndUpdate(
+      id,
+      { p_name, p_description, p_price, P_categories, p_stock },
+      { new: true }
+      );
+      
+    if (!product) {
+      return res.status(404).json({
+        message: "Product Does Not Found",
+      });
+      }
+      
+
+    res.status(200).json({
+      message: "Product Updated Successfully",
+      product: product,
+    });
   } catch (error) {
     return res.status(500).json({
       message: "Server Side Error",
@@ -152,7 +179,7 @@ const getProductByCategory = async (req, res) => {
   }
 };
 
-//GET MULTIPLE CATEGORIES : TASK AFTER E-COM COMPLETED
+//FETCH MULTI CATEGORIES PRODUTC: TASK AFTER E-COM COMPLETED
 
 module.exports = {
   createProduct,

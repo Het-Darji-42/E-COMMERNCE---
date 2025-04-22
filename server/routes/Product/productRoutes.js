@@ -19,4 +19,5 @@ router.delete('/delete/:id', adminMiddleware , DeleteProduct)
 router.get('/products' , getAllProduct)
 router.get('/detail/:id' , fetchSingleProductDetails)
 router.get('/category/:categoryId' , getProductByCategory)
+router.put('/update/:id' , updateProduct)
 module.exports = router
