@@ -25,14 +25,21 @@ const productSchema = new mongoose.Schema(
       required: true,
       default: 1,
     },
-    p_image: [{
-        type: String,
-        required: true,
+    p_image: [
+      {
+        img: {
+          type: String,
+          required: true,
+        },
+        public_id: {
+          type: String,
+          required: true,
+        },
       },
     ],
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
 
-const productModel = mongoose.model('Product', productSchema)
-module.exports = productModel
+const productModel = mongoose.model("Product", productSchema);
+module.exports = productModel;
