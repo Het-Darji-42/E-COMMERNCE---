@@ -288,8 +288,8 @@ Handles order placement and status tracking (Pending, Out for Delivery, Delivere
 - **Controller (**`orderController.js`**)**:
 
   - **Place Order**:
-    - Validate cart items and address.
-    - Calculate total amount.
+    - Validate cart items and address.✅
+    - Calculate total amount.✅
     - Reduce product stock.
     - Create order in `orders` collection.
     - Clear user’s cart.

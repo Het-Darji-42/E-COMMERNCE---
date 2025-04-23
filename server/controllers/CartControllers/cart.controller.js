@@ -1,7 +1,8 @@
 const express = require('express')
 const productModel = require('../../model/ProductModel/product.model')
 const userModel= require('../../model/UserModel/user.model');
-const cartModel = require('../../model/CartModel/cart.model');
+const cartModel = require('../../model/cartModel/cart.model');
+// const cartModel = require('../../model/CartModel/cart.model');
 const AddToCart = async (req, res) => { 
     try {
         const { id } = req.params;

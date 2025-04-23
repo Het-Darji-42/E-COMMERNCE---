@@ -4,6 +4,7 @@ const authRoutes = require('./routes/Auth/authRoutes')
 const categoryRoutes = require('./routes/Category/categoryRoutes')
 const productRoutes = require('./routes/Product/productRoutes')
 const cartRoutes = require('./routes/Cart/cartRoute')
+const orderRoutes = require('./routes/Order/orderRoutes')
 const cors = require('cors')
 
 app.use(cors())
@@ -13,5 +14,6 @@ app.use('/api/v1/auth' , authRoutes)
 app.use('/api/v1/category' , categoryRoutes)
 app.use('/api/v1/product' , productRoutes)
 app.use('/api/v1/cart' ,cartRoutes)
+app.use('/api/v1/order' ,orderRoutes)
 
 module.exports = app 
