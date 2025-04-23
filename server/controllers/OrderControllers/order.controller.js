@@ -3,40 +3,115 @@ const orderModel = require("../../model/OrederHandling/order.model");
 const productModel = require("../../model/ProductModel/product.model");
 
 const placeOrder = async (req, res) => {
-  const userid = req.user.authID;
-  const { shippingAddress } = req.body;
+  try {
+    const userid = req.user.authID;
+    const { address } = req.body;
 
-  const cart = await cartModel
-    .findOne({ user: userid })
-    .populate("CartItems.product");
-  if (!cart) {
-    return res.status(200).json({
-      message: "Card Does Not Found",
-    });
+    //cart malyu badhuj : with product id : pun apde only id nai details pan joiye chhe atle apde teni products ne detils mangi
+    const cart = await cartModel
+      .findOne({ user: userid })
+      .populate("CartItems.product");
+    if (!cart) {
+      return res.status(404).json({
+        message: "Cart Does Not Found",
+      });
     }
-    
 
-    //   const total = cart.total;   // not worked
-    let total = 0 
-    cart.CartItems.forEach((e) => {
-        total += e.product.p_price * e.quantity
-    })
-    
+    let total = 0;
+    for (let item of cart.CartItems) {
+      total += item.product.p_price * item.quantity;
 
-  const placedOrder = await orderModel.create({
-    user: userid,
-    cart: cart,
-    totalAmount: total,
-    shippingAddress: shippingAddress,
+      //check product stock
+      if (item.product.p_stock >= item.quantity) {
+        let productStock = item.product.p_stock - item.quantity;
+        await productModel.findByIdAndUpdate(item.product._id, {
+          p_stock: productStock,
+        });
+      } else {
+        return res.status(400).json({
+          message: `not enough stock available for your orderd item : ${item.product.p_name}`,
+        });
+      }
+    }
 
-  });
+    const newOrderData = {
+      cart: cart,
+      totalAmount: total,
+      shippingAddress: address,
+    };
+    const existedOrder = await orderModel.findOne({ user: userid }).populate({
+      path: "order.cart",
+      populate: {
+        path: "CartItems.product",
+        model: "Product",
+      },
+    });
+    if (existedOrder) {
+      existedOrder.order.push(newOrderData);
+      await existedOrder.save();
+      return res.status(201).json({
+        message: "Order Placed Successfully",
+        order: existedOrder,
+      });
+    } else {
+      const createNewUser = await orderModel.create({
+        user: userid,
+        order: [newOrderData],
+      });
+    }
+    return res.status(201).json({
+      message: "New Order placed successfully",
+      order: placeOrder,
+    });
 
-  return res.status(201).json({
-    message: "Order Placed Successfully",
-    placedOrder: placedOrder,
-  });
+    // const placedOrder = await orderModel.create({
+    //     user: userid,
+    //     order: [
+    //         {
+    //             cart: cart,
+    //             totalAmount: total,
+    //             shippingAddress: address,
+    //         },
+    //     ],
+    // });
+
+    // return res.status(201).json({
+    //     message: "Order Placed Successfully",
+    //     placedItems : placedOrder
+    // })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server Side Error",
+      error: error.message,
+    });
+  }
 };
 
+const getSingleUserAllOrder = async (req, res) => {
+  try {
+    const userid = req.user.authID;
+    const products = await orderModel.findOne({ user: userid }).populate({
+      path: "order.cart",   
+      populate: {
+        path: "CartItems.product",  
+        model: "Product",           
+      },
+    });
+    if (!products) {
+      return res.status(404).json({
+        message: "No Order Founded",
+      });
+    }
+    res.status(200).json({
+      message: "Total Order Fetched",
+      totalOrder: products,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server Side Error",
+      error: error.message,
+    });
+  }
+};
 
-
-module.exports = placeOrder;
+module.exports = { placeOrder, getSingleUserAllOrder };
