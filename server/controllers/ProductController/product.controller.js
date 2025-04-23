@@ -14,6 +14,15 @@ const createProduct = async (req, res) => {
       P_categories,
     });
     if (existedProduct) {
+
+      if (req.files && req.files.length > 0 ) {
+        for (let file of req.files) {
+          if (file && file.path) {
+            fs.unlinkSync(file.path)
+          }
+        }
+      }
+
       return res.status(400).json({
         message: "Already Has This Product With Same Details",
       });
