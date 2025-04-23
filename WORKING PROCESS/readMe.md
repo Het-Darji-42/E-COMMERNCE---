@@ -234,27 +234,27 @@ Allows users to add products to their cart and manage quantities.
 - **Model (**`cartModel.js`**)**:
 
   - **Fields**:
-    - `user`: ObjectId, ref to `User` (links to user).
-    - `items`: Array of Objects:
-      - `product`: ObjectId, ref to `Product` (product in cart).
-      - `quantity`: Number, required (quantity of product).
-    - `updatedAt`: Date, default current timestamp.
+    - `user`: ObjectId, ref to `User` (links to user).✅
+    - `items`: Array of Objects:✅
+      - `product`: ObjectId, ref to `Product` (product in cart).✅
+      - `quantity`: Number, required (quantity of product).✅
+    - `updatedAt`: Date, default current timestamp.✅
   - **Additional Logic**:
     - Ensure product exists and has sufficient stock.
-    - Update cart when quantities change.
+    - Update cart when quantities change.✅
 
 - **Controller (**`cartController.js`**)**:
 
-  - **Add to Cart**:
+  - **Add to Cart**:✅
     - Validate product ID and quantity.
-    - Check if product exists and has stock.
+    - Check if product exists and has stock. :: no ::
     - Add or update product in user’s cart.
-  - **Remove from Cart**:
+  - **Remove from Cart**:✅
     - Remove a product from the user’s cart.
-  - **Update Cart**:
+  - **Update Cart**:✅
     - Update quantities of products in the cart.
     - Validate stock availability.
-  - **Get Cart**:
+  - **Get Cart**:✅
     - Fetch user’s cart with product details.
 
 - **Routes (**`cartRoutes.js`**)**:

@@ -123,6 +123,17 @@ const singleUserCart = async (req, res) => {
         })
     }
 
+        
+        // ADD TOTAL AMOUNT
+        let total = 0;
+        for (let item of cart.CartItems) {
+            const quantity = item.quantity;
+            const price = item.product.p_price
+            total += quantity * price
+        }
+
+      
+
     // if (cart?.CartItems.length === 0) {
     //     return res.status(404).json({
     //         message : "THERE IS NO ONE PRODUCT IN YOUR CART"
@@ -131,7 +142,8 @@ const singleUserCart = async (req, res) => {
 
     res.status(200).json({
         message: "Cart item fetched successfully",
-        product : cart
+        product: cart,
+        totalAmount : total 
     })
     } catch (error) {
         return res.status(500).json({
