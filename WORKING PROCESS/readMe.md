@@ -290,9 +290,9 @@ Handles order placement and status tracking (Pending, Out for Delivery, Delivere
   - **Place Order**:
     - Validate cart items and address.✅
     - Calculate total amount.✅
-    - Reduce product stock.
-    - Create order in `orders` collection.
-    - Clear user’s cart.
+    - Reduce product stock.✅
+    - Create order in `orders` collection.✅
+    - Clear user’s cart.  ::no ,i dont want this ::
   - **Update Order Status**:
     - Allow admins to update status (e.g., `OUT_FOR_DELIVERY` to `DELIVERED`).
     - Notify user (optional, via email or frontend).

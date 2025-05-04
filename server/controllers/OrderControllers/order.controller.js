@@ -91,10 +91,10 @@ const getSingleUserAllOrder = async (req, res) => {
   try {
     const userid = req.user.authID;
     const products = await orderModel.findOne({ user: userid }).populate({
-      path: "order.cart",   
+      path: "order.cart",
       populate: {
-        path: "CartItems.product",  
-        model: "Product",           
+        path: "CartItems.product",
+        model: "Product",
       },
     });
     if (!products) {
@@ -114,4 +114,77 @@ const getSingleUserAllOrder = async (req, res) => {
   }
 };
 
-module.exports = { placeOrder, getSingleUserAllOrder };
+
+const getAllOrder = async (req, res) => { 
+  try {
+    const allOrderData = await orderModel.find()
+
+    let allOrder = [];
+
+    allOrderData.forEach((userOrder) => { 
+      const userId = userOrder.user;
+
+      userOrder.order.forEach((singleProduct) => { 
+        allOrder.push({
+          ...singleProduct._doc,
+          user: userId,
+        })
+      })
+    })
+
+    return res.status(200).json({
+      message: "All Orders Fetched Successfully",
+      totalOrders: allOrder.length,
+      orders: allOrder,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server Side Error",
+      error : error.message
+    })
+  }
+}
+
+
+const updateStatus = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { newStatus } = req.body;
+    
+    const userOrder = await orderModel.findOne({ "order._id": orderId });
+    if (!userOrder) {
+      return res.status(404).json({
+        message: "Order not found in any user’s order list",
+      });
+    }
+
+    const singleOrder = userOrder.order.find(
+      (ord) => ord._id.toString() === orderId
+    );
+
+    if (!singleOrder) {
+      return res.status(404).json({
+        message: "No Any Order Id Found Inside Orders",
+      });
+    }
+
+    singleOrder.orderStatus = newStatus;
+    await userOrder.save();
+
+    return res.status(200).json({
+      message: "Order status updated successfully",
+      updatedOrder: singleOrder,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
+
+
+
+
+module.exports = { placeOrder, getSingleUserAllOrder, updateStatus , getAllOrder};
