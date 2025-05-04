@@ -135,6 +135,7 @@ const getAllProduct = async (req, res) => {
     }
     res.status(200).json({
       message: "All Product Fetched Sucessfully",
+      totalProducts: products.length,
       products,
     });
   } catch (error) {

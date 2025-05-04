@@ -1,4 +1,6 @@
+const fs = require('fs')
 const categoryModel = require('../../model/CategoryModel/category.model')
+const cloudinary = require('../../config/clodinary')
 
 const createCategory = async (req, res) => { 
     try {
@@ -11,14 +13,31 @@ const createCategory = async (req, res) => {
                 message : "Category Already Existed"
             })
         }
+
+        const uploadResult = await cloudinary.uploader
+       .upload(
+           req.file.path, {
+               folder: 'CategoryImages'
+           }
+        )
+       .catch((error) => {
+           console.log(error);
+       });
+       fs.unlinkSync(req.file.path);
+        
+        
+       
     
         const createCategory = await categoryModel.create({
-            category : category
+            category: category,
+            categoryImage: uploadResult.secure_url,
+            imagePublicId : uploadResult.public_id,
+            
         })
     
         res.status(201).json({
             message: "Category is created",
-            category : createCategory
+            category: createCategory,
         })
     } catch (error) {
         return res.status(500).json({
@@ -37,6 +56,14 @@ const deleteCategory = async (req, res) => {
                 message : "Does not found category"
             })
         }
+        const uploadResult = await cloudinary.uploader
+        .destroy(
+            deleteCategory.imagePublicId
+         )
+        .catch((error) => {
+            console.log(error);
+        });
+
         res.status(200).json({
             message : "Category Deleted Successfully"
         })
@@ -52,6 +79,7 @@ const getAllCategories = async (req, res) => {
         const getCategories = await categoryModel.find()
         res.status(200).json({
             message: "ALl Categories Founded",
+            totalCategories: getCategories.length,
             category : getCategories
         })
         
